@@ -16,10 +16,20 @@ spring:
     name: spring-cloud-dataflow-server
   cloud:
     config:
+      enabled: false
       uri: http://localhost:8888
+    dataflow:
+      features:
+        streams-enabled: false
+        analytics-enabled: false
+        schedules-enabled: true
 
   datasource:
     url: jdbc:h2:tcp://localhost:19092/mem:dataflow
     username: sa
     password:
     driverClassName: org.h2.Driver
+  jpa:
+    open-in-view: false
+  quartz:
+    job-store-type: JDBC
