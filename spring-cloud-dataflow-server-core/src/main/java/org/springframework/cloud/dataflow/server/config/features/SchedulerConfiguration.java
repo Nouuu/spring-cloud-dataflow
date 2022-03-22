@@ -16,6 +16,7 @@
 
 package org.springframework.cloud.dataflow.server.config.features;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StringUtils;
 
 /**
  * Establishes the {@link SchedulerService} instance to be used by SCDF.
@@ -74,11 +76,46 @@ public class SchedulerConfiguration {
 			AuditRecordService auditRecordService,
 			ComposedTaskRunnerConfigurationProperties composedTaskRunnerConfigurationProperties) {
 		return new DefaultSchedulerService(commonApplicationProperties,
-				taskPlatforms, taskDefinitionRepository, registry, resourceLoader,
+				primaryTaskPlatform(taskPlatforms), taskDefinitionRepository, registry, resourceLoader,
 				taskConfigurationProperties, dataSourceProperties,
 				this.dataflowServerUri, metaDataResolver, schedulerServiceProperties, auditRecordService,
 				composedTaskRunnerConfigurationProperties);
 	}
+
+	private List<TaskPlatform> primaryTaskPlatform(List<TaskPlatform> taskPlatforms) {
+
+		List<TaskPlatform> candidatePlatforms = new ArrayList<>();
+
+		for (TaskPlatform taskPlatform : taskPlatforms) {
+			if (taskPlatform.isPrimary()) {
+				if (taskPlatform.getLaunchers().size() == 0) {
+					logger.warn("TaskPlatform {} is selected as primary but has no TaskLaunchers configured",
+							taskPlatform.getName());
+				} else {
+					logger.debug("TaskPlatform {} is selected as primary", taskPlatform.getName());
+					candidatePlatforms.add(taskPlatform);
+				}
+			}
+		}
+
+		if (candidatePlatforms.size() > 1) {
+			String[] platformNames = new String[candidatePlatforms.size()];
+			int i = 0;
+			for (TaskPlatform taskPlatform: candidatePlatforms) {
+				platformNames[i++] = taskPlatform.getName();
+			}
+			throw new IllegalStateException(
+					String.format("Expecting 1 primary TaskPlatform., got %d: %s)",
+							candidatePlatforms.size(), StringUtils.arrayToCommaDelimitedString(platformNames)));
+		}
+
+		if (candidatePlatforms.size() == 0) {
+			throw new IllegalStateException("No valid primary TaskPlatform configured");
+		}
+
+		return candidatePlatforms;
+	}
+
 
 	public static class SchedulerConfigurationPropertyChecker extends AllNestedConditions {
 
