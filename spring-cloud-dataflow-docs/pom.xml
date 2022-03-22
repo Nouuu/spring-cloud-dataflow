@@ -50,13 +50,13 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-dataflow-completion</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.spring.docresources</groupId>
-			<artifactId>spring-doc-resources</artifactId>
-			<version>${docs.resources.version}</version>
-			<type>zip</type>
-			<optional>true</optional>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>io.spring.docresources</groupId>-->
+<!--			<artifactId>spring-doc-resources</artifactId>-->
+<!--			<version>${docs.resources.version}</version>-->
+<!--			<type>zip</type>-->
+<!--			<optional>true</optional>-->
+<!--		</dependency>-->
 	</dependencies>
 	<profiles>
 		<profile>
