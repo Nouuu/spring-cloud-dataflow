@@ -15,14 +15,10 @@
  */
 package org.springframework.cloud.dataflow.autoconfigure.local;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.dataflow.server.config.OnLocalPlatform;
 import org.springframework.cloud.dataflow.server.config.features.SchedulerConfiguration;
-import org.springframework.cloud.deployer.spi.scheduler.ScheduleInfo;
-import org.springframework.cloud.deployer.spi.scheduler.ScheduleRequest;
+import org.springframework.cloud.dataflow.server.scheduler.QuartzScheduler;
 import org.springframework.cloud.deployer.spi.scheduler.Scheduler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -37,27 +33,7 @@ public class LocalSchedulerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Scheduler localScheduler() {
-		return new Scheduler() {
-			@Override
-			public void schedule(ScheduleRequest scheduleRequest) {
-				throw new UnsupportedOperationException("Scheduling is not implemented for local platform.");
-			}
-
-			@Override
-			public void unschedule(String scheduleName) {
-				throw new UnsupportedOperationException("Scheduling is not implemented for local platform.");
-			}
-
-			@Override
-			public List<ScheduleInfo> list(String taskDefinitionName) {
-				return Collections.emptyList();
-			}
-
-			@Override
-			public List<ScheduleInfo> list() {
-				return Collections.emptyList();
-			}
-		};
+	public Scheduler localScheduler(org.quartz.Scheduler quartzScheduler) {
+		return new QuartzScheduler(quartzScheduler);
 	}
 }
