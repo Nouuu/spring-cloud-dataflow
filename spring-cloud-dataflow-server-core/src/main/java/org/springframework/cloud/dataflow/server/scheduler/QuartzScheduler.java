@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
 /**
  * A Quartz Scheduler implementation of the {@link Scheduler} SPI.
  *
- * @author Manokethan Parameswaran
+ * @author Manokethan Parameswaran & Noé Larrieu-Lacoste
  */
 public class QuartzScheduler implements Scheduler {
 
@@ -55,6 +55,8 @@ public class QuartzScheduler implements Scheduler {
     private static final String JOB_DATA_TASK_DEPLOYMENT_PROPERTIES_KEY = "taskDeploymentProperties";
 
     private static final String JOB_DATA_TASK_COMMAND_LINE_ARGS_KEY = "commandLineArgs";
+
+    private static final String CRON_EXPRESSION = "scheduler.cron.expression";
 
     private static final Log logger = LogFactory.getLog(QuartzScheduler.class);
 
@@ -74,12 +76,11 @@ public class QuartzScheduler implements Scheduler {
         logger.debug(String.format("Scheduling: %s", scheduleName));
 
          // String cronExpression = scheduleRequest.getSchedulerProperties().get(SchedulerPropertyKeys.CRON_EXPRESSION);
-        String cronExpression = scheduleRequest.getDeploymentProperties().get(SchedulerPropertyKeys.CRON_EXPRESSION);
+        String cronExpression = scheduleRequest.getDeploymentProperties().get(CRON_EXPRESSION);
         Assert.hasText(
                 cronExpression,
                 String.format(
-                        "request's scheduleProperties must have a %s that is not null nor empty",
-                        SchedulerPropertyKeys.CRON_EXPRESSION));
+                        "request's scheduleProperties must have a %s that is not null nor empty",CRON_EXPRESSION));
         try {
             new CronExpression(cronExpression);
         } catch (ParseException pe) {
