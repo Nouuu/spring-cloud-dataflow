@@ -250,7 +250,7 @@ public class DefaultSchedulerService implements SchedulerService {
         AppDefinition revisedDefinition = TaskServiceUtils.mergeAndExpandAppProperties(taskDefinition, metadataResource,
                 appDeploymentProperties, visibleProperties);
         DeploymentPropertiesUtils.validateDeploymentProperties(taskDeploymentProperties);
-        taskDeploymentProperties = extractAndQualifySchedulerProperties(taskDeploymentProperties);
+        // taskDeploymentProperties = extractAndQualifySchedulerProperties(taskDeploymentProperties);
         deployerDeploymentProperties.putAll(taskDeploymentProperties);
 
         Launcher launcher = getPrimaryLauncher();
@@ -450,7 +450,7 @@ public class DefaultSchedulerService implements SchedulerService {
 
         return new TreeMap<>(input).entrySet().stream()
                 .filter(kv -> kv.getKey().startsWith(prefix))
-                .collect(Collectors.toMap(kv -> "spring.cloud.deployer." + kv.getKey().substring(prefixLength), Map.Entry::getValue,
+                .collect(Collectors.toMap(kv -> "spring.cloud.scheduler." + kv.getKey().substring(prefixLength), Map.Entry::getValue,
                         (fromWildcard, fromApp) -> fromApp));
     }
 
